@@ -1,13 +1,13 @@
 {
-  "name": "chat-example",
+  "name": "MT5",
   "version": "0.0.0",
-  "description": "A chat example to showcase how to use `socket.io` with a static `express` server",
-  "main": "server.js",
-  "repository": "",
-  "author": "Mostafa Eweda <mostafa@c9.io>",
+  "private": true,
+  "scripts": {
+    "start": "node ./server.js"
+  },
   "dependencies": {
-    "async": "~0.2.8",
     "express": "~3.2.4",
+    "async": "~0.9.0",
     "socket.io": "~0.9.14"
   }
 }
