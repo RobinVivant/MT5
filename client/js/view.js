@@ -8,8 +8,6 @@ function View() {
     this.masterCanvasContext;
     this.frontCanvas = "frontCanvas"; // the canvas where we draw the time
     this.frontCanvasContext;
-    this.waveCanvas = "waveCanvas"; //the canvas where we draw the animation wave of the song
-    this.waveCanvasContext;
     this.songs = "songs"; //choice list of all the songs
     this.knobMasterVolume = "masterVolume"; // the canvas representing the master volume slider
     this.mute = "bsound"; // button to mute unmute the current song volume
@@ -36,8 +34,6 @@ function View() {
         this.frontCanvas.height = window.View.masterCanvas.height;
         this.frontCanvas.width = window.View.masterCanvas.width;
 
-        this.waveCanvas = document.getElementById(this.waveCanvas);
-        this.waveCanvasContext = this.waveCanvas.getContext('2d');
         this.songs = document.getElementById(this.songs);
         this.knobMasterVolume = document.getElementById(this.knobMasterVolume);
         this.mute = document.getElementById(this.mute);

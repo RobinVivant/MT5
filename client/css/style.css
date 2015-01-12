@@ -1,20 +1,10 @@
-body {
-    margin: 0 3%;
-    background: black;
-}
 
-#app {
-    width: 980px;
-    margin: auto;
-    background: #EEE;
-}
 
 #console {
     position: fixed;
     top: 0;
     height: 200px;
     width: 302px;
-    margin-left: 680px;
     text-align: center;
     color: white;
     background: black;
@@ -36,16 +26,6 @@ body {
     overflow-x: hidden;
 }
 
-#masterTools {
-    position: fixed;
-    top: 0;
-    height: 200px;
-    width: 680px;
-    text-align: center;
-    background: #EEE;
-    border: 1px solid grey;
-    z-index: 10;
-}
 
 #volume {
     height: 42px;
@@ -84,27 +64,6 @@ body {
     top: 200px;
     width: 980px;
     background: #EEE;
-}
-
-.styled-select select {
-    background: #ddd;
-    background: transparent;
-    width: 240px;
-    padding: 5px;
-    font-size: 16px;
-    line-height: 1;
-    border: 0;
-    border-radius: 0;
-    height: 34px;
-    -webkit-appearance: none;
-}
-
-.styled-select {
-    width: 240px;
-    height: 34px;
-    overflow: hidden;
-    background: url(../img/down_arrow_select.jpg) no-repeat right #ddd;
-    border: 1px solid #ccc;
 }
 
 button {
@@ -163,10 +122,6 @@ a[data-toggle=tab] {
 
 /***** for sliders *****/
 
-body {
-    margin-left: 3%;
-}
-
 .touch {
     width: 40%;
 }
@@ -214,4 +169,128 @@ output {
     width: 100px;
     height: 40px;
     font-size: 2em;
+}
+
+
+/* NEW STYLE */
+/* (ouech) */
+
+
+@import url(http://fonts.googleapis.com/css?family=Titillium+Web:600,400,300);
+
+*:not(i){
+    font-family: 'Titillium Web', sans-serif !important;
+}
+body {
+    margin: 0;
+    padding: 0;
+    background: black;
+}
+
+#app {
+    width: 100%;
+    height:100%;
+    background-color: #EEE;
+}
+
+#masterTools {
+    position: fixed;
+    top: 0;
+    height: 300px;
+    width: 100%;
+    background: #EEE;
+    border: 1px solid grey;
+    z-index: 10;
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+#leftHeader{
+    width:100%;
+    height:100%;
+}
+
+#rightHeader{
+    width:80px;
+    height:100%;
+    border-left: 3px solid black;
+}
+
+#ce-search{
+
+}
+
+#ce-titleControls{
+    height:80px;
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.ce-icon-text{
+    display:inline-block;
+    text-align:center;
+    margin-top:7px;
+}
+
+.ce-icon-text > div{
+    font-size:1em;
+    width:100%;
+}
+
+
+.ce-icon-text:first-child{
+    margin-left: 270px;
+    margin-right:15px;
+}
+
+
+#ce-title{
+    margin-left: 10px;
+    font-size:1.7em;
+    line-height: 80px;
+    width:100%;
+
+}
+
+#ce-playbackControls{
+
+}
+
+#songs select {
+    display:block;
+    line-height:1em;
+    font-size:1em;
+    height:40px;
+    margin:10px;
+    padding:5px;
+    width: 250px;
+    background: url(../img/down_arrow_select.jpg) no-repeat right #ddd;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.ce-flex-title-control{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width:100%;
+}
+
+#ce-bpm{
+   width:110px;
+}
+
+.ce-bpm-select{
+    display:inline-block;
+    text-align:center;
+    margin-left:5px;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+.ce-bpm-select > span{
+    font-weight:bold;
 }
