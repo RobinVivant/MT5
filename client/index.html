@@ -65,12 +65,12 @@
                 <div id="ce-ctrl-btns">
                     <div class="row-1">
                         <i class="fa fa-backward fa-2x"></i>
-                        <i class="fa fa-play fa-2x"></i>
+                        <i id="bplay" class="fa fa-play fa-2x"></i>
                         <i class="fa fa-forward fa-2x"></i>
                     </div>
                     <div class="row-2">
-                        <i class="fa fa-stop fa-2x"></i>
-                        <i class="fa fa-circle fa-2x"></i>
+                        <i id="bstop" class="fa fa-stop fa-2x"></i>
+                        <i id="brecordMix" class="fa fa-circle fa-2x"></i>
                     </div>
                     <div class="row-3">
                         <i class="fa fa-volume-up fa-2x"></i>
@@ -88,10 +88,9 @@
         </div>
         <div id="rightHeader">
             <i class="fa fa-user fa-3x"></i>
-            <i class="fa fa-wechat fa-3x"></i>
+            <i class="fa fa-wechat fa-3x" onclick="TogetherJS(this); return false;"></i>
             <i class="fa fa-video-camera fa-3x"></i>
             <i class="fa fa-gear fa-3x"></i>
-
         </div>
         <!--
         <span id="volume">
@@ -142,16 +141,19 @@
             </td></tr>
         </table>
         -->
-    </div>
 
+    </div>
     <div id="scroll">
         <div id="trackControl">
             <table id="tracks"></table>
         </div>
+
         <div id="canvass">
             <div style="position: relative;">
+                <!--
                 <canvas id="myCanvas" width="602" height="400" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
                 <canvas id="frontCanvas"                       style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+                -->
             </div>
         </div>
     </div>
@@ -159,6 +161,9 @@
 
 
 <ascript src="http://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></ascript>
+<!--
+<script src="https://togetherjs.com/togetherjs-min.js"></script>
+-->
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/view.js"></script>
@@ -173,6 +178,7 @@
 <script src="js/canvasArrows.js"></script>
 <script src="js/range-touch.js"></script>
 <script src="js/recorderjs/recorder.js"></script>
+<script src="js/ce_init.js"></script>
 <script>init();</script>
 </body>
 </html>

@@ -7,7 +7,7 @@ function addRangeListeners() {
     console.log("display value");
     $(this).next().val($(this).val());
   });
-
+/*
   // see: http://stackoverflow.com/a/18389801/1148249
   $('body').on("input", 'input[type="range"]', function () {
     var val = ($(this).val() - $(this).attr('min')) / ($(this).attr('max') - $(this).attr('min')) * 100;
@@ -18,4 +18,5 @@ function addRangeListeners() {
 
     $(this).css('background-image', cssProp)
   });
+  */
 }

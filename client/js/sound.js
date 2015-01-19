@@ -61,22 +61,22 @@ function init() {
     divTrack = document.getElementById("tracks");
     divConsole = document.querySelector("#messages");
 
+    /*
+     // The waveform drawer
+     waveformDrawer = new WaveformDrawer();
 
-    // The waveform drawer
-    waveformDrawer = new WaveformDrawer();
+     View.frontCanvas.addEventListener("mouseup", function (event) {
+     if (!existsSelection()) {
+     console.log("mouse click on canvas, let's jump to another position in the song");
+     var mousePos = getMousePos(window.View.frontCanvas, event);
+     // will compute time from mouse pos and start playing from there...
+     jumpTo(mousePos.x);
+     }
+     });
 
-    View.frontCanvas.addEventListener("mouseup", function (event) {
-        if (!existsSelection()) {
-            console.log("mouse click on canvas, let's jump to another position in the song");
-            var mousePos = getMousePos(window.View.frontCanvas, event);
-            // will compute time from mouse pos and start playing from there...
-            jumpTo(mousePos.x);
-        }
-    });
-
-    // Mouse listeners for loop selection
-    initLoopABListeners();
-
+     // Mouse listeners for loop selection
+     initLoopABListeners();
+     */
     // Master volume slider
     masterVolumeSlider = $('.knob').val();
 
@@ -141,23 +141,25 @@ function resetSelection() {
 
 function initLoopABListeners() {
     // For loop A/B selection
-    $("#" + View.frontCanvas.id).mousedown(function (event) {
-        resetSelection();
-        var previousMousePos = getMousePos(window.View.frontCanvas, event);
-        selectionForLoop.xStart = previousMousePos.x;
+    /*
+     $("#" + View.frontCanvas.id).mousedown(function (event) {
+     resetSelection();
+     var previousMousePos = getMousePos(window.View.frontCanvas, event);
+     selectionForLoop.xStart = previousMousePos.x;
 
-        $("#" + View.frontCanvas.id).bind("mousemove", previousMousePos, function (event) {
-            // calculate move angle minus the angle onclick
-            var mousePos = getMousePos(window.View.frontCanvas, event);
+     $("#" + View.frontCanvas.id).bind("mousemove", previousMousePos, function (event) {
+     // calculate move angle minus the angle onclick
+     var mousePos = getMousePos(window.View.frontCanvas, event);
 
-            //console.log("mousedrag from (" + previousMousePos.x + ", " + previousMousePos.y + ") to ("
-            //    + mousePos.x + ", " + mousePos.y +")");
-            selectionForLoop.xEnd = mousePos.x;
+     //console.log("mousedrag from (" + previousMousePos.x + ", " + previousMousePos.y + ") to ("
+     //    + mousePos.x + ", " + mousePos.y +")");
+     selectionForLoop.xEnd = mousePos.x;
 
-            // Switch xStart and xEnd if necessary, compute width of selection
-            adjustSelectionMarkers();
-        });
-    });
+     // Switch xStart and xEnd if necessary, compute width of selection
+     adjustSelectionMarkers();
+     });
+     });
+     */
 
     /**
      * Remove listener when mouseup
@@ -183,22 +185,22 @@ function adjustSelectionMarkers() {
 }
 
 function initAudioContext() {
-        // Initialise the Audio Context
-        // There can be only one!
-        var context;
+    // Initialise the Audio Context
+    // There can be only one!
+    var context;
 
-        if (typeof AudioContext == "function") {
-            context = new AudioContext();
-            console.log("USING STANDARD WEB AUDIO API");
-        } else if ((typeof webkitAudioContext == "function") || (typeof webkitAudioContext == "object")) {
-            context = new webkitAudioContext();
-            console.log("USING WEBKIT AUDIO API");
-        } else {
-            throw new Error('AudioContext is not supported. :(');
-        }
-        return context;
+    if (typeof AudioContext == "function") {
+        context = new AudioContext();
+        console.log("USING STANDARD WEB AUDIO API");
+    } else if ((typeof webkitAudioContext == "function") || (typeof webkitAudioContext == "object")) {
+        context = new webkitAudioContext();
+        console.log("USING WEBKIT AUDIO API");
+    } else {
+        throw new Error('AudioContext is not supported. :(');
     }
-    // SOUNDS AUDIO ETC.
+    return context;
+}
+// SOUNDS AUDIO ETC.
 
 
 function resetAllBeforeLoadingANewSong() {
@@ -235,26 +237,27 @@ function loadAllSoundSamples() {
 }
 
 function drawTrack(decodedBuffer, trackNumber) {
-
-    console.log("drawTrack : let's draw sample waveform for track No" + trackNumber + " named " +
-        currentSong.tracks[trackNumber].name);
-
+    /*
+     console.log("drawTrack : let's draw sample waveform for track No" + trackNumber + " named " +
+     currentSong.tracks[trackNumber].name);
+     */
     var trackName = currentSong.tracks[trackNumber].name;
     //trackName = trackName.slice(trackName.lastIndexOf("/")+1, trackName.length-4);
 
-    waveformDrawer.init(decodedBuffer, View.masterCanvas, '#83E83E');
+    //waveformDrawer.init(decodedBuffer, View.masterCanvas, '#83E83E');
     var x = 0;
     var y = trackNumber * SAMPLE_HEIGHT;
     // First parameter = Y position (top left corner)
     // second = height of the sample drawing
-    waveformDrawer.drawWave(y, SAMPLE_HEIGHT);
+    //waveformDrawer.drawWave(y, SAMPLE_HEIGHT);
+    /*
+     View.masterCanvasContext.strokeStyle = "white";
+     View.masterCanvasContext.strokeRect(x, y, window.View.masterCanvas.width, SAMPLE_HEIGHT);
 
-    View.masterCanvasContext.strokeStyle = "white";
-    View.masterCanvasContext.strokeRect(x, y, window.View.masterCanvas.width, SAMPLE_HEIGHT);
-
-    View.masterCanvasContext.font = '14pt Arial';
-    View.masterCanvasContext.fillStyle = 'white';
-    View.masterCanvasContext.fillText(trackName, x + 10, y + 20);
+     View.masterCanvasContext.font = '14pt Arial';
+     View.masterCanvasContext.fillStyle = 'white';
+     View.masterCanvasContext.fillText(trackName, x + 10, y + 20);
+     */
 }
 
 function finishedLoading(bufferList) {
@@ -355,7 +358,7 @@ function loadSong(songName) {
         var song = JSON.parse(this.response);
 
         // resize canvas depending on number of samples
-        resizeSampleCanvas(song.instruments.length);
+        //resizeSampleCanvas(song.instruments.length);
 
         // for eah instrument/track in the song
         song.instruments.forEach(function (instrument, trackNumber) {
@@ -365,11 +368,13 @@ function loadSong(songName) {
             // Render HTMl
             var span = document.createElement('tr');
             span.innerHTML = '<td class="trackBox" style="height : ' + SAMPLE_HEIGHT + 'px">' +
-                "<progress class='pisteProgress' id='progress" + trackNumber + "' value='0' max='100' style='width : " + SAMPLE_HEIGHT + "px' ></progress>" +
-                instrument.name + '<div style="float : right;">' +
-                "<button class='mute' id='mute" + trackNumber + "' onclick='muteUnmuteTrack(" + trackNumber + ");'><span class='glyphicon glyphicon-volume-up'></span></button> " +
-                "<button class='solo' id='solo" + trackNumber + "' onclick='soloNosoloTrack(" + trackNumber + ");'><img src='../img/earphones.png' /></button></div>" +
-                "<span id='volspan'><input type='range' class = 'volumeSlider custom' id='volume" + trackNumber + "' min='0' max = '100' value='100' oninput='setVolumeOfTrackDependingOnSliderValue(" + trackNumber + ");'/></span><td>";
+            "<progress class='pisteProgress' id='progress" + trackNumber + "' value='0' max='100' style='width : " + SAMPLE_HEIGHT + "px' ></progress>" +
+            '<div class="instruName">'+instrument.name + '</div>'
+            +"<span id='volspan'><input type='range' class = 'volumeSlider custom' id='volume" + trackNumber + "' min='0' max = '100' value='100' oninput='setVolumeOfTrackDependingOnSliderValue(" + trackNumber + ");'/></span>"
+            +'<div class="trakCtrlsCont">' +
+            "<button class='mute' id='mute" + trackNumber + "' onclick='muteUnmuteTrack(" + trackNumber + ");'>Mute</button> " +
+            "<button class='solo' id='solo" + trackNumber + "' onclick='soloNosoloTrack(" + trackNumber + ");'>Solo</button></div>"
+            +"<td>";
 
             divTrack.appendChild(span);
 
@@ -434,76 +439,78 @@ function toFixed(value, precision) {
 }
 
 function animateTime() {
-    // clear canvas
-    View.frontCanvasContext.clearRect(0, 0, window.View.masterCanvas.width, window.View.masterCanvas.height);
+    /*
+     // clear canvas
+     View.frontCanvasContext.clearRect(0, 0, window.View.masterCanvas.width, window.View.masterCanvas.height);
 
-    // Draw something only if a song has been loaded
-    if (currentSong !== undefined) {
-
-
-        // Draw selection for loop
-        drawSelection();
-
-        if (!currentSong.paused) {
-            // Draw the time on the front canvas
-            currentTime = context.currentTime;
-            var delta = currentTime - lastTime;
+     // Draw something only if a song has been loaded
+     if (currentSong !== undefined) {
 
 
-            var totalTime;
+     // Draw selection for loop
+     drawSelection();
 
-            View.frontCanvasContext.fillStyle = 'white';
-            View.frontCanvasContext.font = '14pt Arial';
-            //View.frontCanvasContext.fillText(toFixed(currentSong.elapsedTimeSinceStart, 1) + "s", 180, 20);
-            View.frontCanvasContext.fillText((currentSong.elapsedTimeSinceStart + "").toFormattedTime() + "s", 180, 20);
-            //console.log("dans animate");
+     if (!currentSong.paused) {
+     // Draw the time on the front canvas
+     currentTime = context.currentTime;
+     var delta = currentTime - lastTime;
 
-            // at least one track has been loaded
-            if (currentSong.decodedAudioBuffers[0] !== undefined) {
 
-                totalTime = currentSong.getDuration();
-                currentXTimeline = currentSong.elapsedTimeSinceStart * window.View.masterCanvas.width / totalTime;
+     var totalTime;
 
-                // draw frequencies that dance with the music
-                drawFrequencies();
+     View.frontCanvasContext.fillStyle = 'white';
+     View.frontCanvasContext.font = '14pt Arial';
+     //View.frontCanvasContext.fillText(toFixed(currentSong.elapsedTimeSinceStart, 1) + "s", 180, 20);
+     View.frontCanvasContext.fillText((currentSong.elapsedTimeSinceStart + "").toFormattedTime() + "s", 180, 20);
+     //console.log("dans animate");
 
-                // Draw time bar
-                View.frontCanvasContext.strokeStyle = "white";
-                View.frontCanvasContext.lineWidth = 3;
-                View.frontCanvasContext.beginPath();
-                View.frontCanvasContext.moveTo(currentXTimeline, 0);
-                View.frontCanvasContext.lineTo(currentXTimeline, window.View.masterCanvas.height);
-                View.frontCanvasContext.stroke();
+     // at least one track has been loaded
+     if (currentSong.decodedAudioBuffers[0] !== undefined) {
 
-                currentSong.elapsedTimeSinceStart += delta;
-                lastTime = currentTime;
+     totalTime = currentSong.getDuration();
+     currentXTimeline = currentSong.elapsedTimeSinceStart * window.View.masterCanvas.width / totalTime;
 
-                if (currentSong.loopMode) {
-                    // Did we reach the end of the loop
-                    if (existsSelection()) {
-                        if (currentXTimeline > selectionForLoop.xEnd) {
-                            jumpTo(selectionForLoop.xStart);
-                        }
-                    }
-                }
+     // draw frequencies that dance with the music
+     drawFrequencies();
 
-                // Did we reach the end of the song ?
-                if (currentSong.elapsedTimeSinceStart > currentSong.getDuration()) {
-                    // Clear the console log and display it
-                    clearLog();
-                    log("Song's finished, press Start again,");
-                    log("or click in the middle of the song,");
-                    log("or load another song...");
+     // Draw time bar
+     View.frontCanvasContext.strokeStyle = "white";
+     View.frontCanvasContext.lineWidth = 3;
+     View.frontCanvasContext.beginPath();
+     View.frontCanvasContext.moveTo(currentXTimeline, 0);
+     View.frontCanvasContext.lineTo(currentXTimeline, window.View.masterCanvas.height);
+     View.frontCanvasContext.stroke();
 
-                    // Stop the current song
-                    stopAllTracks();
-                }
-            }
-        }
-    } else {
-        showWelcomeMessage();
-    }
-    requestAnimFrame(animateTime);
+     currentSong.elapsedTimeSinceStart += delta;
+     lastTime = currentTime;
+
+     if (currentSong.loopMode) {
+     // Did we reach the end of the loop
+     if (existsSelection()) {
+     if (currentXTimeline > selectionForLoop.xEnd) {
+     jumpTo(selectionForLoop.xStart);
+     }
+     }
+     }
+
+     // Did we reach the end of the song ?
+     if (currentSong.elapsedTimeSinceStart > currentSong.getDuration()) {
+     // Clear the console log and display it
+     clearLog();
+     log("Song's finished, press Start again,");
+     log("or click in the middle of the song,");
+     log("or load another song...");
+
+     // Stop the current song
+     stopAllTracks();
+     }
+     }
+     }
+     } else {
+     showWelcomeMessage();
+     }
+     requestAnimFrame(animateTime);
+     */
 }
 
 function showWelcomeMessage() {
@@ -691,7 +698,7 @@ function pauseAllTracks() {
 function setMasterVolume(val) {
     if (currentSong !== undefined) {
         // If we are here, then we need to reset the mute all button
-        document.querySelector("#bsound").innerHTML = '<span class="glyphicon glyphicon-volume-up"></span>';
+        //document.querySelector("#bsound").innerHTML = '<span class="glyphicon glyphicon-volume-up"></span>';
         var fraction;
 
         // set its volume to the current value of the master volume knob
@@ -725,19 +732,19 @@ function soloNosoloTrack(trackNumber) {
         // we were not in solo mode, let's go in solo mode
         currentTrack.solo = true;
         // Let's change the icon
-        s.innerHTML = "<img src='../img/noearphones.png' />";
+        //s.innerHTML = "<img src='../img/noearphones.png' />";
     } else {
         // we were in solo mode, let's go to the "no solo" mode
         currentTrack.solo = false;
         // Let's change the icon
-        s.innerHTML = "<img src='../img/earphones.png' />";
+        //s.innerHTML = "<img src='../img/earphones.png' />";
     }
 
     // In all cases we remove the mute state of the curent track
     currentTrack.mute = false;
     $(m).removeClass("activated");
     // Let's change the icon
-    m.innerHTML = "<span class='glyphicon glyphicon-volume-up'></span>";
+    //m.innerHTML = "<span class='glyphicon glyphicon-volume-up'></span>";
 
     // Adjust the volumes depending on all mute/solo states
     currentSong.setTrackVolumesDependingOnMuteSoloStatus();
@@ -756,18 +763,18 @@ function muteUnmuteTrack(trackNumber) {
         // Track was not muted, let's mute it!
         currentTrack.muted = true;
         // let's change the button's class
-        m.innerHTML = "<span class='glyphicon glyphicon-volume-off'></span>";
+        //m.innerHTML = "<span class='glyphicon glyphicon-volume-off'></span>";
     } else {
         // track was muted, let's unmute it!
         currentTrack.muted = false;
-        m.innerHTML = "<span class='glyphicon glyphicon-volume-up'></span>";
+        //m.innerHTML = "<span class='glyphicon glyphicon-volume-up'></span>";
     }
 
     // In all cases we must put the track on "no solo" mode
     currentTrack.solo = false;
     $(s).removeClass("activated");
     // Let's change the icon
-    s.innerHTML = "<img src='../img/earphones.png' />";
+    //s.innerHTML = "<img src='../img/earphones.png' />";
 
     // adjust track volumes dependinf on all mute/solo states
     currentSong.setTrackVolumesDependingOnMuteSoloStatus();
@@ -779,12 +786,13 @@ function masterMuteUnmute(btn) {
     currentSong.toggleMute();
 
     $(btn).toggleClass("activated");
-
+/*
     if (currentSong.muted) {
         btn.innerHTML = '<span class="glyphicon glyphicon-volume-off"></span>';
     } else {
         btn.innerHTML = '<span class="glyphicon glyphicon-volume-up"></span>';
     }
+    */
 }
 
 function toggleRecordMix() {
