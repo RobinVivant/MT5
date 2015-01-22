@@ -48,7 +48,7 @@ function WaveformDrawer() {
         ctx.beginPath();
         ctx.moveTo(0, halfH);
         ctx.lineTo(width, halfH);
-        console.log("drawing from 0, " + halfH + " to " + width + ", " + halfH);
+        //console.log("drawing from 0, " + halfH + " to " + width + ", " + halfH);
         ctx.stroke();
 
 

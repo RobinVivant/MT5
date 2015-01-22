@@ -4,17 +4,16 @@
 // cette classe ne contient pas forcement tout les elements de la page mais ceux qui vont surement etre utilisés dans le code
 function View() {
     // all html elements [element=id]
-    /*
+    
     this.masterCanvas = "myCanvas"; // the canvas where we draw the track wave
     this.masterCanvasContext;
     this.frontCanvas = "frontCanvas"; // the canvas where we draw the time
     this.frontCanvasContext;
-    */
+    
     this.songs = "songs"; //choice list of all the songs
     this.knobMasterVolume = "masterVolume"; // the canvas representing the master volume slider
     this.mute = "bsound"; // button to mute unmute the current song volume
     this.play = "bplay";
-    this.pause = "bpause";
     this.stop = "bstop";
     this.startLoop = "loopStart";
     this.endLoop = "loopEnd";
@@ -27,7 +26,7 @@ function View() {
 
     // getting all the html elements when the page completly loads
     this.init = function () {
-        /*
+        
         this.masterCanvas = document.getElementById(this.masterCanvas);
         this.masterCanvasContext = this.masterCanvas.getContext('2d');
         this.frontCanvas = document.getElementById(this.frontCanvas);
@@ -36,12 +35,11 @@ function View() {
         // make it same size as its brother
         this.frontCanvas.height = window.View.masterCanvas.height;
         this.frontCanvas.width = window.View.masterCanvas.width;
-*/
+
         this.songs = document.getElementById(this.songs);
         this.knobMasterVolume = document.getElementById(this.knobMasterVolume);
         this.mute = document.getElementById(this.mute);
         this.play = document.getElementById(this.play);
-        this.pause = document.getElementById(this.pause);
         this.stop = document.getElementById(this.stop);
         this.startLoop = document.getElementById(this.startLoop);
         this.endLoop = document.getElementById(this.endLoop);

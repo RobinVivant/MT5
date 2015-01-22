@@ -8,7 +8,7 @@ var currentSong;
 // The audio context
 var context;
 
-var buttonPlay, buttonStop, buttonPause, buttonRecordMix;
+var buttonPlay, buttonStop, buttonRecordMix;
 // List of tracks and mute buttons
 var divTrack;
 //The div where we display messages
@@ -54,29 +54,37 @@ function init() {
 
     // Get handles on buttons
     buttonPlay = document.querySelector("#bplay");
-    buttonPause = document.querySelector("#bpause");
     buttonStop = document.querySelector("#bstop");
     buttonRecordMix = document.querySelector("#brecordMix");
 
     divTrack = document.getElementById("tracks");
     divConsole = document.querySelector("#messages");
 
-    /*
+    
      // The waveform drawer
      waveformDrawer = new WaveformDrawer();
 
      View.frontCanvas.addEventListener("mouseup", function (event) {
      if (!existsSelection()) {
-     console.log("mouse click on canvas, let's jump to another position in the song");
-     var mousePos = getMousePos(window.View.frontCanvas, event);
-     // will compute time from mouse pos and start playing from there...
-     jumpTo(mousePos.x);
-     }
+            console.log("mouse click on canvas, let's jump to another position in the song");
+            var mousePos = getMousePos(window.View.frontCanvas, event);
+            // will compute time from mouse pos and start playing from there...
+            jumpTo(mousePos.x);
+        }
+     });
+
+     View.frontCanvas.addEventListener("touchend", function (event) {
+     if (!existsSelection()) {
+            console.log("mouse click on canvas, let's jump to another position in the song");
+            var mousePos = getMousePos(window.View.frontCanvas, event);
+            // will compute time from mouse pos and start playing from there...
+            jumpTo(mousePos.x);
+        }
      });
 
      // Mouse listeners for loop selection
-     initLoopABListeners();
-     */
+     //initLoopABListeners();
+     
     // Master volume slider
     masterVolumeSlider = $('.knob').val();
 
@@ -143,23 +151,23 @@ function initLoopABListeners() {
     // For loop A/B selection
     /*
      $("#" + View.frontCanvas.id).mousedown(function (event) {
-     resetSelection();
-     var previousMousePos = getMousePos(window.View.frontCanvas, event);
-     selectionForLoop.xStart = previousMousePos.x;
+        resetSelection();
+        var previousMousePos = getMousePos(window.View.frontCanvas, event);
+        selectionForLoop.xStart = previousMousePos.x;
 
-     $("#" + View.frontCanvas.id).bind("mousemove", previousMousePos, function (event) {
-     // calculate move angle minus the angle onclick
-     var mousePos = getMousePos(window.View.frontCanvas, event);
+        $("#" + View.frontCanvas.id).bind("mousemove", previousMousePos, function (event) {
+        // calculate move angle minus the angle onclick
+        var mousePos = getMousePos(window.View.frontCanvas, event);
 
-     //console.log("mousedrag from (" + previousMousePos.x + ", " + previousMousePos.y + ") to ("
-     //    + mousePos.x + ", " + mousePos.y +")");
-     selectionForLoop.xEnd = mousePos.x;
+        //console.log("mousedrag from (" + previousMousePos.x + ", " + previousMousePos.y + ") to ("
+        //    + mousePos.x + ", " + mousePos.y +")");
+        selectionForLoop.xEnd = mousePos.x;
 
-     // Switch xStart and xEnd if necessary, compute width of selection
-     adjustSelectionMarkers();
+        // Switch xStart and xEnd if necessary, compute width of selection
+        adjustSelectionMarkers();
      });
-     });
-     */
+     });*/
+     
 
     /**
      * Remove listener when mouseup
@@ -237,27 +245,25 @@ function loadAllSoundSamples() {
 }
 
 function drawTrack(decodedBuffer, trackNumber) {
-    /*
+
+    if (trackNumber > 0)
+        return;
+
      console.log("drawTrack : let's draw sample waveform for track No" + trackNumber + " named " +
      currentSong.tracks[trackNumber].name);
-     */
+     
     var trackName = currentSong.tracks[trackNumber].name;
-    //trackName = trackName.slice(trackName.lastIndexOf("/")+1, trackName.length-4);
+    trackName = trackName.slice(trackName.lastIndexOf("/")+1, trackName.length-4);
 
-    //waveformDrawer.init(decodedBuffer, View.masterCanvas, '#83E83E');
+    waveformDrawer.init(decodedBuffer, View.masterCanvas, '#83E83E');
     var x = 0;
-    var y = trackNumber * SAMPLE_HEIGHT;
+    var y = 0;
     // First parameter = Y position (top left corner)
     // second = height of the sample drawing
-    //waveformDrawer.drawWave(y, SAMPLE_HEIGHT);
-    /*
+    waveformDrawer.drawWave(y, window.View.masterCanvas.height);
+    
      View.masterCanvasContext.strokeStyle = "white";
-     View.masterCanvasContext.strokeRect(x, y, window.View.masterCanvas.width, SAMPLE_HEIGHT);
-
-     View.masterCanvasContext.font = '14pt Arial';
-     View.masterCanvasContext.fillStyle = 'white';
-     View.masterCanvasContext.fillText(trackName, x + 10, y + 20);
-     */
+     View.masterCanvasContext.strokeRect(x, y, window.View.masterCanvas.width, window.View.masterCanvas.height);
 }
 
 function finishedLoading(bufferList) {
@@ -358,7 +364,7 @@ function loadSong(songName) {
         var song = JSON.parse(this.response);
 
         // resize canvas depending on number of samples
-        //resizeSampleCanvas(song.instruments.length);
+        resizeSampleCanvas(song.instruments.length);
 
         // for eah instrument/track in the song
         song.instruments.forEach(function (instrument, trackNumber) {
@@ -367,14 +373,14 @@ function loadSong(songName) {
 
             // Render HTMl
             var span = document.createElement('tr');
-            span.innerHTML = '<td class="trackBox" style="height : ' + SAMPLE_HEIGHT + 'px">' +
-            "<progress class='pisteProgress' id='progress" + trackNumber + "' value='0' max='100' style='width : " + SAMPLE_HEIGHT + "px' ></progress>" +
+            span.innerHTML = '<td class="trackBox">' +
+            "<progress class='pisteProgress' id='progress" + trackNumber + "' value='0' max='100'></progress>" +
             '<div class="instruName">'+instrument.name + '</div>'
             +"<span id='volspan'><input type='range' class = 'volumeSlider custom' id='volume" + trackNumber + "' min='0' max = '100' value='100' oninput='setVolumeOfTrackDependingOnSliderValue(" + trackNumber + ");'/></span>"
             +'<div class="trakCtrlsCont">' +
             "<button class='mute' id='mute" + trackNumber + "' onclick='muteUnmuteTrack(" + trackNumber + ");'>Mute</button> " +
             "<button class='solo' id='solo" + trackNumber + "' onclick='soloNosoloTrack(" + trackNumber + ");'>Solo</button></div>"
-            +"<td>";
+            +"</td>";
 
             divTrack.appendChild(span);
 
@@ -439,7 +445,7 @@ function toFixed(value, precision) {
 }
 
 function animateTime() {
-    /*
+    
      // clear canvas
      View.frontCanvasContext.clearRect(0, 0, window.View.masterCanvas.width, window.View.masterCanvas.height);
 
@@ -471,7 +477,7 @@ function animateTime() {
      currentXTimeline = currentSong.elapsedTimeSinceStart * window.View.masterCanvas.width / totalTime;
 
      // draw frequencies that dance with the music
-     drawFrequencies();
+     //drawFrequencies();
 
      // Draw time bar
      View.frontCanvasContext.strokeStyle = "white";
@@ -506,28 +512,9 @@ function animateTime() {
      }
      }
      }
-     } else {
-     showWelcomeMessage();
      }
      requestAnimFrame(animateTime);
-     */
-}
-
-function showWelcomeMessage() {
-    View.frontCanvasContext.save();
-    View.frontCanvasContext.font = '14pt Arial';
-    View.frontCanvasContext.fillStyle = 'white';
-    View.frontCanvasContext.fillText('Welcome to MT5, start by choosing a song ', 50, 200);
-    View.frontCanvasContext.fillText('in this drop down menu! ', 50, 220);
-    View.frontCanvasContext.fillText('Documentation and HowTo in the ', 315, 100);
-    View.frontCanvasContext.fillText('first link of the Help tab there! ', 315, 120);
-
-    // Draws an arrow in direction of the drop down menu
-    // x1, y1, x2, y2, width of arrow, color
-    drawArrow(View.frontCanvasContext, 180, 170, 10, 10, 10, 'lightGreen');
-    drawArrow(View.frontCanvasContext, 450, 80, 450, 10, 10, 'lightGreen');
-
-    View.frontCanvasContext.restore();
+     
 }
 
 function drawSelection() {
@@ -536,15 +523,15 @@ function drawSelection() {
     if (existsSelection()) {
         // draw selection
         View.frontCanvasContext.fillStyle = "rgba(0, 240, 240, 0.4)";
-        View.frontCanvasContext.fillRect(selectionForLoop.xStart, 0, selectionForLoop.width, window.View.frontCanvas.height);
+        View.frontCanvasContext.fillRect(0, 0, window.View.masterCanvas.width, window.View.frontCanvas.height);
     }
     View.frontCanvasContext.restore();
 }
 
 
-function drawFrequencies() {
+function drawFrequencies() {/*
     View.waveCanvasContext.save();
-    //View.waveCanvasContext.clearRect(0, 0, View.waveCanvas.width, View.waveCanvas.height);
+    View.waveCanvasContext.clearRect(0, 0, View.waveCanvas.width, View.waveCanvas.height);
     View.waveCanvasContext.fillStyle = "rgba(0, 0, 0, 0.05)";
     View.waveCanvasContext.fillRect(0, 0, View.waveCanvas.width, View.waveCanvas.height);
 
@@ -596,35 +583,33 @@ function drawFrequencies() {
     }
     View.waveCanvasContext.stroke();
 
-    View.waveCanvasContext.restore();
+    View.waveCanvasContext.restore();*/
 }
 
 function drawSampleImage(imageURL, trackNumber, trackName) {
     var image = new Image();
 
     image.onload = function () {
+        if (trackNumber > 0)
+            return;
         // SAMPLE_HEIGHT pixels height
         var x = 0;
-        var y = trackNumber * SAMPLE_HEIGHT;
-        View.masterCanvasContext.drawImage(image, x, y, window.View.masterCanvas.width, SAMPLE_HEIGHT);
+        var y = 0;
+        View.masterCanvasContext.drawImage(image, x, y, window.View.masterCanvas.width, window.View.masterCanvas.height);
 
         View.masterCanvasContext.strokeStyle = "white";
-        View.masterCanvasContext.strokeRect(x, y, window.View.masterCanvas.width, SAMPLE_HEIGHT);
-
-        View.masterCanvasContext.font = '14pt Arial';
-        View.masterCanvasContext.fillStyle = 'white';
-        View.masterCanvasContext.fillText(trackName, x + 10, y + 20);
+        View.masterCanvasContext.strokeRect(x, y, window.View.masterCanvas.width, window.View.masterCanvas.height);
     };
     image.src = imageURL;
 }
 
 function resizeSampleCanvas(numTracks) {
-    window.View.masterCanvas.height = SAMPLE_HEIGHT * numTracks;
+    window.View.masterCanvas.height = 150;
     window.View.frontCanvas.height = window.View.masterCanvas.height;
 }
 
 function clearAllSampleDrawings() {
-    //View.masterCanvasContext.clearRect(0,0, canvas.width, canvas.height);
+    View.masterCanvasContext.clearRect(0,0, canvas.width, canvas.height);
 }
 
 
@@ -655,7 +640,7 @@ function playAllTracks(startTime) {
     // Set play/stop/pause buttons' states
     buttonPlay.disabled = true;
     buttonStop.disabled = false;
-    buttonPause.disabled = false;
+    //buttonPause.disabled = false;
 
     // Note : we memorise the current time, context.currentTime always
     // goes forward, it's a high precision timer
@@ -677,7 +662,7 @@ function stopAllTracks() {
 
     // update gui's state
     buttonStop.disabled = true;
-    buttonPause.disabled = true;
+    //buttonPause.disabled = true;
     buttonPlay.disabled = false;
 
     // reset the elapsed time
@@ -704,7 +689,8 @@ function setMasterVolume(val) {
         // set its volume to the current value of the master volume knob
         if (val === undefined) {
             console.log("calling setMasterVolume without parameters, let's take the value from GUI");
-            fraction = $("#masterVolume").val() / 100;
+            //fraction = $("#masterVolume").val() / 100;
+            fraction = 10;
         } else {
             fraction = val / 100;
         }

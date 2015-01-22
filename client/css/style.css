@@ -56,7 +56,16 @@
 }
 
 #myCanvas {
-    background: black;
+    width: 100%;
+    position: absolute;
+    height: 150px;
+    z-index: 0;
+}
+#frontCanvas {
+    width: 100%;
+    height: 150px;
+    position: absolute;
+    z-index: 1;
 }
 
 #scroll {
@@ -276,12 +285,13 @@ body {
     margin:5px;
 }
 
-#ce-playbackControls > #ce-ctrl-wave{
+#ce-playbackControls > .ce-ctrl-wave{
     flex-grow: 1;
     background-color: black;
     margin-left: 10px;
     margin-right: 10px;
     background-image: url('/img/sound-wave.jpg');
+    position: relative;
 }
 
 
@@ -316,6 +326,8 @@ body {
     height: 10px;
     border-radius: 50%;
     background-color: grey;
+    padding: 0;
+    border: 0;
 }
 
 #songs select {
