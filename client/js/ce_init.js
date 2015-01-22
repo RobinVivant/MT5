@@ -5,6 +5,7 @@ $(document).ready(function(){
     };
 
     $('#bplay').on('click', function(){
+        if (currentSong === undefined || _finishedLoading == false) return;
         if( $(this).hasClass('fa-play') ){
             playAllTracks(0);
             $(this).removeClass('fa-play');
@@ -23,12 +24,14 @@ $(document).ready(function(){
     });
 
     $('#ce-backward').on('click', function(){
-        console.log('pourquoi ?');
         minusTenSeconds();
     });
 
     $('#ce-forward').on('click', function(){
-        console.log('pourquoi ?');
         plusTenSeconds();
+    });
+
+    $('#loop').on('click', function(){
+        handleClickLoop();
     });
 });

@@ -2,8 +2,11 @@
 //hooking the interface object to the window
 window.View = new View();
 
+var isLooping;
 // The current song
 var currentSong;
+
+var _finishedLoading;
 
 // The audio context
 var context;
@@ -20,7 +23,8 @@ var waveformDrawer;
 // zone selected for loop
 var selectionForLoop = {
     xStart: -1,
-    xEnd: -1
+    xEnd: -1,
+    width: 0
 };
 
 
@@ -64,34 +68,23 @@ function init() {
      // The waveform drawer
      waveformDrawer = new WaveformDrawer();
 
-     View.frontCanvas.addEventListener("mouseup", function (event) {
+     View.frontCanvas.addEventListener("click", function (event) {
      if (!existsSelection()) {
-            console.log("mouse click on canvas, let's jump to another position in the song");
+            if (currentSong === undefined || _finishedLoading == false) return;
             var mousePos = getMousePos(window.View.frontCanvas, event);
             // will compute time from mouse pos and start playing from there...
             jumpTo(mousePos.x);
         }
-     });
-
-     View.frontCanvas.addEventListener("touchend", function (event) {
-     if (!existsSelection()) {
-            console.log("mouse click on canvas, let's jump to another position in the song");
-            var mousePos = getMousePos(window.View.frontCanvas, event);
-            // will compute time from mouse pos and start playing from there...
-            jumpTo(mousePos.x);
+        else {
+            clearLoop()
         }
      });
-
-     // Mouse listeners for loop selection
-     //initLoopABListeners();
      
     // Master volume slider
     masterVolumeSlider = $('.knob').val();
 
     // Init audio context
     context = initAudioContext();
-
-
 
     // Get the list of the songs available on the server and build a
     // drop down menu
@@ -114,18 +107,17 @@ function clearLog() {
 }
 
 function existsSelection() {
-
-    return ((selectionForLoop.xStart !== -1) && (selectionForLoop.xEnd !== -1));
+    return (isLooping) ? (selectionForLoop.xStart !== -1) : ((selectionForLoop.xStart !== -1) && (selectionForLoop.xEnd !== -1));
 }
 
 function loopOnOff() {
     currentSong.toggleLoopMode();
-    $("#loopOnOff").toggleClass("activated");
     console.log("LoopMode : " + currentSong.loopMode);
 }
 
 function setLoopStart() {
     if (!currentSong.paused) {
+        loopOnOff();
         selectionForLoop.xStart = currentXTimeline;
         // Switch xStart and xEnd if necessary, compute width of selection
         adjustSelectionMarkers();
@@ -140,50 +132,56 @@ function setLoopEnd() {
     }
 }
 
+function clearLoop() {
+    resetSelection();
+}
+
 function resetSelection() {
     selectionForLoop = {
         xStart: -1,
-        xEnd: -1
+        xEnd: -1,
+        width: 0
     };
 }
 
-function initLoopABListeners() {
-    // For loop A/B selection
-    /*
-     $("#" + View.frontCanvas.id).mousedown(function (event) {
+function handleClickLoop() {
+    if (currentSong === undefined || _finishedLoading == false) return;
+    if (isLooping) {
+        isLooping = false;
+        console.log($('.loopTitle'));
+        $('.loopTitle').text('boucle');
+        setLoopEnd();
+    }
+    else {
         resetSelection();
-        var previousMousePos = getMousePos(window.View.frontCanvas, event);
-        selectionForLoop.xStart = previousMousePos.x;
-
-        $("#" + View.frontCanvas.id).bind("mousemove", previousMousePos, function (event) {
-        // calculate move angle minus the angle onclick
-        var mousePos = getMousePos(window.View.frontCanvas, event);
-
-        //console.log("mousedrag from (" + previousMousePos.x + ", " + previousMousePos.y + ") to ("
-        //    + mousePos.x + ", " + mousePos.y +")");
-        selectionForLoop.xEnd = mousePos.x;
-
-        // Switch xStart and xEnd if necessary, compute width of selection
-        adjustSelectionMarkers();
-     });
-     });*/
-     
-
-    /**
-     * Remove listener when mouseup
-     */
-    $("#" + View.frontCanvas.id).mouseup(function () {
-        $("#" + View.frontCanvas.id).unbind("mousemove");
-
-    });
+        isLooping = true;
+        $('.loopTitle').text('Fin boucle');
+        setLoopStart();
+    }
 }
+
+
 
 function adjustSelectionMarkers() {
     if (existsSelection()) {
         // Adjust the different values of the selection
-        var selectionWidth = Math.abs(selectionForLoop.xEnd - selectionForLoop.xStart);
-        var start = Math.min(selectionForLoop.xStart, selectionForLoop.xEnd);
-        var end = Math.max(selectionForLoop.xStart, selectionForLoop.xEnd);
+        var selectionWidth;
+        var end;
+        if (selectionForLoop.xEnd != -1) {
+            selectionWidth = Math.abs(selectionForLoop.xEnd - selectionForLoop.xStart);
+            if (isLooping)
+                end = Math.max(selectionForLoop.xStart, currentXTimeline);
+        } else {
+            selectionWidth = Math.abs(currentSong.elapsedTimeSinceStart - selectionForLoop.xStart)
+            if (isLooping)
+                end = Math.max(selectionForLoop.xStart, selectionForLoop.xEnd);
+        }
+
+        var start = selectionForLoop.xStart;
+        if (!isLooping) {
+            end = selectionForLoop.xEnd;
+        }
+
         selectionForLoop = {
             xStart: start,
             xEnd: end,
@@ -199,10 +197,8 @@ function initAudioContext() {
 
     if (typeof AudioContext == "function") {
         context = new AudioContext();
-        console.log("USING STANDARD WEB AUDIO API");
     } else if ((typeof webkitAudioContext == "function") || (typeof webkitAudioContext == "object")) {
-        context = new webkitAudioContext();
-        console.log("USING WEBKIT AUDIO API");
+        context = new webkitAudioContext()
     } else {
         throw new Error('AudioContext is not supported. :(');
     }
@@ -212,7 +208,6 @@ function initAudioContext() {
 
 
 function resetAllBeforeLoadingANewSong() {
-    console.log('resetAllBeforeLoadingANewSong');
 
     // disable the menu for selecting song: avoid downloading more than one song
     // at the same time
@@ -248,9 +243,6 @@ function drawTrack(decodedBuffer, trackNumber) {
 
     if (trackNumber > 0)
         return;
-
-     console.log("drawTrack : let's draw sample waveform for track No" + trackNumber + " named " +
-     currentSong.tracks[trackNumber].name);
      
     var trackName = currentSong.tracks[trackNumber].name;
     trackName = trackName.slice(trackName.lastIndexOf("/")+1, trackName.length-4);
@@ -267,6 +259,7 @@ function drawTrack(decodedBuffer, trackNumber) {
 }
 
 function finishedLoading(bufferList) {
+    _finishedLoading = true;
     log("Finished loading all tracks, press Start button above!");
 
     // set the decoded buffer in the song object
@@ -310,7 +303,6 @@ function loadSongList() {
 
     s.change(function (e) {
         var songName = $(this).val();
-        console.log("You chose : " + songName);
 
         if (songName !== "nochoice") {
             // We load if there is no current song or if the current song is
@@ -333,7 +325,6 @@ function loadSongList() {
         }
 
         songList.forEach(function (songName) {
-            console.log(songName);
 
             $("<option />", {
                 value: songName,
@@ -360,6 +351,7 @@ function loadSong(songName) {
     xhr.open('GET', currentSong.url, true);
 
     xhr.onload = function (e) {
+        _finishedLoading = false;
         // get a JSON description of the song
         var song = JSON.parse(this.response);
 
@@ -421,6 +413,9 @@ function getMousePos(canvas, evt) {
 }
 
 function plusTenSeconds() {
+
+    if (currentSong === undefined || _finishedLoading == false) return;
+
     var savedTime = currentSong.elapsedTimeSinceStart;
     stopAllTracks();
     savedTime += 10;
@@ -428,6 +423,8 @@ function plusTenSeconds() {
 }
 
 function minusTenSeconds() {
+    if (currentSong === undefined || _finishedLoading == false) return;
+
     var savedTime = currentSong.elapsedTimeSinceStart;
     stopAllTracks();
     savedTime -= 10;
@@ -440,7 +437,6 @@ function jumpTo(x) {
     // is there a song loaded ?
     if (currentSong === undefined) return;
 
-    //console.log("in jumpTo x = " + x);
     // width - totalTime
     // x - ?
     stopAllTracks();
@@ -482,16 +478,12 @@ function animateTime() {
      View.frontCanvasContext.font = '14pt Arial';
      //View.frontCanvasContext.fillText(toFixed(currentSong.elapsedTimeSinceStart, 1) + "s", 180, 20);
      View.frontCanvasContext.fillText((currentSong.elapsedTimeSinceStart + "").toFormattedTime() + "s", currentXTimeline + 5.3, 20);
-     //console.log("dans animate");
 
      // at least one track has been loaded
      if (currentSong.decodedAudioBuffers[0] !== undefined) {
 
      totalTime = currentSong.getDuration();
      currentXTimeline = currentSong.elapsedTimeSinceStart * window.View.masterCanvas.width / totalTime;
-
-     // draw frequencies that dance with the music
-     //drawFrequencies();
 
      // Draw time bar
      View.frontCanvasContext.strokeStyle = "white";
@@ -504,13 +496,11 @@ function animateTime() {
      currentSong.elapsedTimeSinceStart += delta;
      lastTime = currentTime;
 
-     if (currentSong.loopMode) {
      // Did we reach the end of the loop
-     if (existsSelection()) {
-     if (currentXTimeline > selectionForLoop.xEnd) {
-     jumpTo(selectionForLoop.xStart);
-     }
-     }
+     if (existsSelection() && !isLooping) {
+         if (currentXTimeline > selectionForLoop.xEnd) {
+            jumpTo(selectionForLoop.xStart);
+        }
      }
 
      // Did we reach the end of the song ?
@@ -533,71 +523,14 @@ function animateTime() {
 
 function drawSelection() {
     View.frontCanvasContext.save();
-
     if (existsSelection()) {
+
+        adjustSelectionMarkers();
         // draw selection
-        View.frontCanvasContext.fillStyle = "rgba(0, 240, 240, 0.4)";
-        View.frontCanvasContext.fillRect(0, 0, window.View.masterCanvas.width, window.View.frontCanvas.height);
+        View.frontCanvasContext.fillStyle = "rgba(0, 240, 240, 0.8)";
+        View.frontCanvasContext.fillRect(selectionForLoop.xStart, 0, selectionForLoop.width, window.View.frontCanvas.height);
     }
     View.frontCanvasContext.restore();
-}
-
-
-function drawFrequencies() {/*
-    View.waveCanvasContext.save();
-    View.waveCanvasContext.clearRect(0, 0, View.waveCanvas.width, View.waveCanvas.height);
-    View.waveCanvasContext.fillStyle = "rgba(0, 0, 0, 0.05)";
-    View.waveCanvasContext.fillRect(0, 0, View.waveCanvas.width, View.waveCanvas.height);
-
-    var freqByteData = new Uint8Array(currentSong.analyserNode.frequencyBinCount);
-    currentSong.analyserNode.getByteFrequencyData(freqByteData);
-    var nbFreq = freqByteData.length;
-
-    var SPACER_WIDTH = 5;
-    var BAR_WIDTH = 2;
-    var OFFSET = 100;
-    var CUTOFF = 23;
-    var HALF_HEIGHT = View.waveCanvas.height / 2;
-    var numBars = 1.7 * Math.round(View.waveCanvas.width / SPACER_WIDTH);
-
-    View.waveCanvasContext.lineCap = 'round';
-
-    for (var i = 0; i < numBars; ++i) {
-        var magnitude = 0.3 * freqByteData[Math.round((i * nbFreq) / numBars)];
-
-        View.waveCanvasContext.fillStyle = "hsl( " + Math.round((i * 360) / numBars) + ", 100%, 50%)";
-        View.waveCanvasContext.fillRect(i * SPACER_WIDTH, HALF_HEIGHT, BAR_WIDTH, -magnitude);
-        View.waveCanvasContext.fillRect(i * SPACER_WIDTH, HALF_HEIGHT, BAR_WIDTH, magnitude);
-
-    }
-
-    // Draw animated white lines top
-    View.waveCanvasContext.strokeStyle = "white";
-    View.waveCanvasContext.beginPath();
-
-    for (var i = 0; i < numBars; ++i) {
-        var magnitude = 0.3 * freqByteData[Math.round((i * nbFreq) / numBars)];
-        if (i > 0) {
-            //console.log("line lineTo "  + i*SPACER_WIDTH + ", " + -magnitude);
-            View.waveCanvasContext.lineTo(i * SPACER_WIDTH, HALF_HEIGHT - magnitude);
-        } else {
-            //console.log("line moveto "  + i*SPACER_WIDTH + ", " + -magnitude);
-            View.waveCanvasContext.moveTo(i * SPACER_WIDTH, HALF_HEIGHT - magnitude);
-        }
-    }
-    for (var i = 0; i < numBars; ++i) {
-        var magnitude = 0.3 * freqByteData[Math.round((i * nbFreq) / numBars)];
-        if (i > 0) {
-            //console.log("line lineTo "  + i*SPACER_WIDTH + ", " + -magnitude);
-            View.waveCanvasContext.lineTo(i * SPACER_WIDTH, HALF_HEIGHT + magnitude);
-        } else {
-            //console.log("line moveto "  + i*SPACER_WIDTH + ", " + -magnitude);
-            View.waveCanvasContext.moveTo(i * SPACER_WIDTH, HALF_HEIGHT + magnitude);
-        }
-    }
-    View.waveCanvasContext.stroke();
-
-    View.waveCanvasContext.restore();*/
 }
 
 function drawSampleImage(imageURL, trackNumber, trackName) {
@@ -628,6 +561,8 @@ function clearAllSampleDrawings() {
 
 
 function playAllTracks(startTime) {
+
+    if (currentSong === undefined || _finishedLoading == false) return;
     // First : build the web audio graph
     //currentSong.buildGraph();
 
@@ -669,7 +604,7 @@ function setVolumeOfTrackDependingOnSliderValue(nbTrack) {
 }
 
 function stopAllTracks() {
-    if (currentSong === undefined) return;
+    if (currentSong === undefined || _finishedLoading == false) return;
 
     // Stop the song
     currentSong.stop();
@@ -702,9 +637,8 @@ function setMasterVolume(val) {
 
         // set its volume to the current value of the master volume knob
         if (val === undefined) {
-            console.log("calling setMasterVolume without parameters, let's take the value from GUI");
             //fraction = $("#masterVolume").val() / 100;
-            fraction = 10;
+            fraction = 1;
         } else {
             fraction = val / 100;
         }
@@ -713,7 +647,6 @@ function setMasterVolume(val) {
         // sound as good.
         currentSong.setVolume(fraction * fraction);
 
-        console.log("volume : " + currentSong.volume);
     }
 }
 
