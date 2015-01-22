@@ -278,6 +278,8 @@ function finishedLoading(bufferList) {
     $(".mute").attr("disabled", false);
     $(".solo").attr("disabled", false);
 
+    $("#ce-playbackControls i").css('color', 'black');
+
     // enable song select menu
     var s = document.querySelector("#songSelect");
     s.disabled = false;

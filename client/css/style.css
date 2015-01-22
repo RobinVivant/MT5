@@ -1,4 +1,18 @@
+*:not(input){
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
 
+body, html{
+  margin: 0;
+  padding:0;
+  width:100%;
+  height:100%;
+}
 
 #console {
     position: fixed;
@@ -285,6 +299,7 @@ body {
 
 #ce-playbackControls  i{
     margin:5px;
+    color: rgb(182, 182, 182);
 }
 
 #ce-playbackControls > .ce-ctrl-wave{
