@@ -213,6 +213,7 @@ body {
     display:flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    z-index: 100;
 }
 
 #leftHeader{
@@ -337,6 +338,7 @@ body {
     margin-left: 2px;
     margin-top: 2px;
     background-color: whitesmoke;
+    background-image: url("http://localhost:3000/img/partoche_demo.png");
     z-index: 0;
 
 }

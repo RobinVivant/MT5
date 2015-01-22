@@ -348,7 +348,7 @@ function openPartoche(trackNumber) {
     } else {
         $(p).height($('#scroll').height());
         $(tb).css('background-color', '#A04646');
-        $(p).css('z-index', '999');
+        $(p).css('z-index', '10');
     }
 
     partocheOpened = !partocheOpened;
