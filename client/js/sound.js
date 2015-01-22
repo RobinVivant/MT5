@@ -420,6 +420,20 @@ function getMousePos(canvas, evt) {
     };
 }
 
+function plusTenSeconds() {
+    var savedTime = currentSong.elapsedTimeSinceStart;
+    stopAllTracks();
+    savedTime += 10;
+    playAllTracks(savedTime);
+}
+
+function minusTenSeconds() {
+    var savedTime = currentSong.elapsedTimeSinceStart;
+    stopAllTracks();
+    savedTime -= 10;
+    playAllTracks(savedTime);
+}
+
 // Michel Buffa : x is in pixels, should be in seconds, and this function should
 // be moved into song.js, and elapsedTimeSinceStart be an attribute...
 function jumpTo(x) {
@@ -467,7 +481,7 @@ function animateTime() {
      View.frontCanvasContext.fillStyle = 'white';
      View.frontCanvasContext.font = '14pt Arial';
      //View.frontCanvasContext.fillText(toFixed(currentSong.elapsedTimeSinceStart, 1) + "s", 180, 20);
-     View.frontCanvasContext.fillText((currentSong.elapsedTimeSinceStart + "").toFormattedTime() + "s", 180, 20);
+     View.frontCanvasContext.fillText((currentSong.elapsedTimeSinceStart + "").toFormattedTime() + "s", currentXTimeline + 5.3, 20);
      //console.log("dans animate");
 
      // at least one track has been loaded

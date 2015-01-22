@@ -64,9 +64,9 @@
             <div id="ce-playbackControls">
                 <div id="ce-ctrl-btns">
                     <div class="row-1">
-                        <i class="fa fa-backward fa-2x"></i>
+                        <i id="ce-backward" class="fa fa-backward fa-2x"></i>
                         <i id="bplay" class="fa fa-play fa-2x"></i>
-                        <i class="fa fa-forward fa-2x"></i>
+                        <i id="ce-forward" class="fa fa-forward fa-2x"></i>
                     </div>
                     <div class="row-2">
                         <i id="bstop" class="fa fa-stop fa-2x"></i>
@@ -82,16 +82,16 @@
                     </div>
                 </div>
                 <div class="ce-ctrl-wave" >
-                <canvas height="150" width="300" id="myCanvas"></canvas>
-                <canvas height="150" width="300" id="frontCanvas"></canvas>
+                <canvas height="150" width="677" id="myCanvas"></canvas>
+                <canvas height="150" width="677" id="frontCanvas"></canvas>
                 </div>
             </div>
         </div>
         <div id="rightHeader">
-            <i class="fa fa-user fa-3x"></i>
-            <i class="fa fa-wechat fa-3x" onclick="TogetherJS(this); return false;"></i>
-            <i class="fa fa-video-camera fa-3x"></i>
-            <i class="fa fa-gear fa-3x"></i>
+            <i class="fa fa-user fa-3x" style="cursor: pointer;"></i>
+            <i class="fa fa-wechat fa-3x" style="cursor: pointer;" onclick="TogetherJS(this); return false;"></i>
+            <i class="fa fa-video-camera fa-3x" style="cursor: pointer;"></i>
+            <i class="fa fa-gear fa-3x" style="cursor: pointer;"></i>
         </div>
         <!--
         <span id="volume">

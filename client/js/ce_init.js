@@ -18,5 +18,17 @@ $(document).ready(function(){
 
     $('#bstop').on('click', function(){
         stopAllTracks();
+        $('#bplay').removeClass('fa-pause');
+        $('#bplay').addClass('fa-play');
+    });
+
+    $('#ce-backward').on('click', function(){
+        console.log('pourquoi ?');
+        minusTenSeconds();
+    });
+
+    $('#ce-forward').on('click', function(){
+        console.log('pourquoi ?');
+        plusTenSeconds();
     });
 });
