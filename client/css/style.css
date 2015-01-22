@@ -37,13 +37,13 @@
 
 #trackControl {
     float: left;
-    width: 378px;
+    width: 260px;
     overflow: hidden;
 }
 
 #tracks {
     width: 260px;
-    margin-top: -1px;
+    margin-top: 0px;
 }
 
 .trackBox {
@@ -72,7 +72,7 @@
     position: absolute;
     top: 303px;
     width: 100%;
-    background: #EEE;
+    background: #525252;
 }
 
 button {
@@ -119,6 +119,7 @@ a[data-toggle=tab] {
 .instruName{
     margin-top: 20px;
     font-size: 1.5em;
+    color: white;
 }
 
 .knobDiv {
@@ -206,7 +207,7 @@ body {
     top: 0;
     height: 300px;
     width: 100%;
-    background: #EEE;
+    background: #E7E7E7;
     border: 1px solid grey;
     z-index: 10;
     display:flex;
@@ -287,10 +288,9 @@ body {
 
 #ce-playbackControls > .ce-ctrl-wave{
     flex-grow: 1;
-    background-color: black;
+    background-color: transparent;
     margin-left: 10px;
     margin-right: 10px;
-    background-image: url('/img/sound-wave.jpg');
     position: relative;
 }
 
@@ -328,6 +328,17 @@ body {
     background-color: grey;
     padding: 0;
     border: 0;
+}
+
+.partoche {
+    width: 74%;
+    position: absolute;
+    height: 120px;
+    margin-left: 2px;
+    margin-top: 2px;
+    background-color: whitesmoke;
+    z-index: 0;
+
 }
 
 #songs select {

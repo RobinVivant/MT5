@@ -7,6 +7,7 @@ var isLooping;
 var currentSong;
 
 var _finishedLoading;
+var partocheOpened = false;
 
 // The audio context
 var context;
@@ -335,6 +336,23 @@ function loadSongList() {
     xhr.send();
 }
 
+function openPartoche(trackNumber) {
+
+    var p = document.querySelector("#partoche" + trackNumber);
+    var tb = document.querySelector("#trackBox" + trackNumber);
+
+    if (partocheOpened) {
+        $(p).height(120);
+        $(tb).css('background-color', '#525252');
+        $(p).css('z-index', '0');
+    } else {
+        $(p).height($('#scroll').height());
+        $(tb).css('background-color', '#A04646');
+        $(p).css('z-index', '999');
+    }
+
+    partocheOpened = !partocheOpened;
+}
 
 // ##### TRACKS #####
 
@@ -365,14 +383,15 @@ function loadSong(songName) {
 
             // Render HTMl
             var span = document.createElement('tr');
-            span.innerHTML = '<td class="trackBox">' +
+            span.innerHTML = '<td class="trackBox" id="trackBox' + trackNumber + '">' +
             "<progress class='pisteProgress' id='progress" + trackNumber + "' value='0' max='100'></progress>" +
             '<div class="instruName">'+instrument.name + '</div>'
             +"<span id='volspan'><input type='range' class = 'volumeSlider custom' id='volume" + trackNumber + "' min='0' max = '100' value='100' oninput='setVolumeOfTrackDependingOnSliderValue(" + trackNumber + ");'/></span>"
             +'<div class="trakCtrlsCont">' +
             "<button class='mute' id='mute" + trackNumber + "' onclick='muteUnmuteTrack(" + trackNumber + ");'>Mute</button> " +
             "<button class='solo' id='solo" + trackNumber + "' onclick='soloNosoloTrack(" + trackNumber + ");'>Solo</button></div>"
-            +"</td>";
+            +"</td>"+
+            "<td class='partoche' id='partoche" + trackNumber + "' onclick='openPartoche(" + trackNumber + ");'></td>";
 
             divTrack.appendChild(span);
 
