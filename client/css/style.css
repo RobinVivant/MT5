@@ -210,9 +210,9 @@ body {
     background: #E7E7E7;
     border: 1px solid grey;
     z-index: 10;
-    display:flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    display: -webkit-flex;
+    -webkit-flex-direction: row;
+    -webkit-flex-wrap: nowrap;
     z-index: 100;
 }
 
@@ -242,9 +242,9 @@ body {
 
 #ce-titleControls{
     height:80px;
-    display:flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    display: -webkit-flex;
+    -webkit-flex-direction: row;
+    -webkit-flex-wrap: nowrap;
 }
 
 .ce-icon-text{
@@ -274,9 +274,9 @@ body {
 }
 
 #ce-playbackControls{
-    display:flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    display: -webkit-flex;
+    -webkit-flex-direction: row;
+    -webkit-flex-wrap: nowrap;
     height: 150px;
 }
 #ce-playbackControls > #ce-ctrl-btns{
@@ -288,7 +288,7 @@ body {
 }
 
 #ce-playbackControls > .ce-ctrl-wave{
-    flex-grow: 1;
+    -webkit-flex-grow: 1;
     background-color: transparent;
     margin-left: 10px;
     margin-right: 10px;
@@ -297,7 +297,7 @@ body {
 
 
 #ce-playbackControls .row-3{
-    display:flex;
+    display: -webkit-flex;
 }
 
 #volume-bar{
@@ -337,8 +337,10 @@ body {
     height: 120px;
     margin-left: 2px;
     margin-top: 2px;
-    background-color: whitesmoke;
-    background-image: url("http://localhost:3000/img/partoche_demo.png");
+    background-color: white;
+    background-repeat: no-repeat;
+    background-image: url("../img/partoche_demo.png");
+    background-position-x: center;
     z-index: 0;
 
 }
@@ -358,9 +360,9 @@ body {
 }
 
 .ce-flex-title-control{
-    display:flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    display: -webkit-flex;
+    -webkit-flex-direction: row;
+    -webkit-flex-wrap: nowrap;
     width:100%;
 }
 
@@ -377,7 +379,7 @@ body {
 }
 
 .ce-bpm-select > span{
-    font-weight:bold;
+    font-size: 0.9em;
 }
 
 .trakCtrlsCont{
