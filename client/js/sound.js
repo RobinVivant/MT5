@@ -150,7 +150,7 @@ function handleClickLoop() {
     if (isLooping) {
         isLooping = false;
         console.log($('.loopTitle'));
-        $('.loopTitle').text('boucle');
+        $('.loopTitle').text('Boucle');
         setLoopEnd();
     }
     else {
@@ -242,13 +242,13 @@ function loadAllSoundSamples() {
 
 function drawTrack(decodedBuffer, trackNumber) {
 
-    if (trackNumber > 0)
+    if (trackNumber != currentSong.tracks.length - 2)
         return;
      
     var trackName = currentSong.tracks[trackNumber].name;
     trackName = trackName.slice(trackName.lastIndexOf("/")+1, trackName.length-4);
 
-    waveformDrawer.init(decodedBuffer, View.masterCanvas, '#83E83E');
+    waveformDrawer.init(decodedBuffer, View.masterCanvas, '#E7865C');
     var x = 0;
     var y = 0;
     // First parameter = Y position (top left corner)
@@ -283,6 +283,8 @@ function finishedLoading(bufferList) {
     // enable song select menu
     var s = document.querySelector("#songSelect");
     s.disabled = false;
+
+    $('#loadingTracks').text('');
 
     // Set each track volume slider to max
     for (i = 0; i < currentSong.getNbTracks(); i++) {
@@ -323,7 +325,7 @@ function loadSongList() {
         if (songList[0]) {
             $("<option />", {
                 value: "nochoice",
-                text: "Choose a song..."
+                text: "Choisir un morceau..."
             }).appendTo(s);
         }
 
@@ -383,11 +385,12 @@ function loadSong(songName) {
             // Let's add a new track to the current song for this instrument
             currentSong.addTrack(instrument);
 
+            var instruName = instrument.name.charAt(0).toUpperCase() + instrument.name.substr(1).toLowerCase();
             // Render HTMl
             var span = document.createElement('tr');
             span.innerHTML = '<td class="trackBox" id="trackBox' + trackNumber + '">' +
             "<progress class='pisteProgress' id='progress" + trackNumber + "' value='0' max='100'></progress>" +
-            '<div class="instruName">'+instrument.name + '</div>'
+            '<div class="instruName">'+ instruName + '</div>'
             +"<span id='volspan'><input type='range' class = 'volumeSlider custom' id='volume" + trackNumber + "' min='0' max = '100' value='100' oninput='setVolumeOfTrackDependingOnSliderValue(" + trackNumber + ");'/></span>"
             +'<div class="trakCtrlsCont">' +
             "<button class='mute' id='mute" + trackNumber + "' onclick='muteUnmuteTrack(" + trackNumber + ");'>Mute</button> " +
@@ -465,6 +468,7 @@ function jumpTo(x) {
     var startTime = (x * totalTime) / window.View.frontCanvas.width;
     currentSong.elapsedTimeSinceStart = startTime;
 
+    lastTime = context.currentTime;
     playAllTracks(startTime);
 }
 
@@ -484,59 +488,59 @@ function animateTime() {
      if (currentSong !== undefined) {
 
 
-     // Draw selection for loop
-     drawSelection();
+         // Draw selection for loop
+         drawSelection();
 
-     if (!currentSong.paused) {
-     // Draw the time on the front canvas
-     currentTime = context.currentTime;
-     var delta = currentTime - lastTime;
+         if (!currentSong.paused) {
+             // Draw the time on the front canvas
+             currentTime = context.currentTime;
+             var delta = currentTime - lastTime;
 
 
-     var totalTime;
+             var totalTime;
 
-     View.frontCanvasContext.fillStyle = 'white';
-     View.frontCanvasContext.font = '14pt Arial';
-     //View.frontCanvasContext.fillText(toFixed(currentSong.elapsedTimeSinceStart, 1) + "s", 180, 20);
-     View.frontCanvasContext.fillText((currentSong.elapsedTimeSinceStart + "").toFormattedTime() + "s", currentXTimeline + 5.3, 20);
+             View.frontCanvasContext.fillStyle = 'white';
+             View.frontCanvasContext.font = '14pt Arial';
+             //View.frontCanvasContext.fillText(toFixed(currentSong.elapsedTimeSinceStart, 1) + "s", 180, 20);
+             View.frontCanvasContext.fillText((currentSong.elapsedTimeSinceStart + "").toFormattedTime() + "s", currentXTimeline + 5.3, 20);
 
-     // at least one track has been loaded
-     if (currentSong.decodedAudioBuffers[0] !== undefined) {
+             // at least one track has been loaded
+             if (currentSong.decodedAudioBuffers[0] !== undefined) {
 
-     totalTime = currentSong.getDuration();
-     currentXTimeline = currentSong.elapsedTimeSinceStart * window.View.masterCanvas.width / totalTime;
+                 totalTime = currentSong.getDuration();
+                 currentXTimeline = currentSong.elapsedTimeSinceStart * window.View.masterCanvas.width / totalTime;
 
-     // Draw time bar
-     View.frontCanvasContext.strokeStyle = "white";
-     View.frontCanvasContext.lineWidth = 3;
-     View.frontCanvasContext.beginPath();
-     View.frontCanvasContext.moveTo(currentXTimeline, 0);
-     View.frontCanvasContext.lineTo(currentXTimeline, window.View.masterCanvas.height);
-     View.frontCanvasContext.stroke();
+                 // Draw time bar
+                 View.frontCanvasContext.strokeStyle = "white";
+                 View.frontCanvasContext.lineWidth = 3;
+                 View.frontCanvasContext.beginPath();
+                 View.frontCanvasContext.moveTo(currentXTimeline, 0);
+                 View.frontCanvasContext.lineTo(currentXTimeline, window.View.masterCanvas.height);
+                 View.frontCanvasContext.stroke();
 
-     currentSong.elapsedTimeSinceStart += delta;
-     lastTime = currentTime;
+                 currentSong.elapsedTimeSinceStart += delta;
+                 lastTime = currentTime;
 
-     // Did we reach the end of the loop
-     if (existsSelection() && !isLooping) {
-         if (currentXTimeline > selectionForLoop.xEnd) {
-            jumpTo(selectionForLoop.xStart);
+                 // Did we reach the end of the loop
+                 if (existsSelection() && !isLooping) {
+                     if (currentXTimeline > selectionForLoop.xEnd) {
+                        jumpTo(selectionForLoop.xStart);
+                    }
+                 }
+
+                 // Did we reach the end of the song ?
+                 if (currentSong.elapsedTimeSinceStart > currentSong.getDuration()) {
+                     // Clear the console log and display it
+                     clearLog();
+                     log("Song's finished, press Start again,");
+                     log("or click in the middle of the song,");
+                     log("or load another song...");
+
+                     // Stop the current song
+                     stopAllTracks();
+                 }
+            }
         }
-     }
-
-     // Did we reach the end of the song ?
-     if (currentSong.elapsedTimeSinceStart > currentSong.getDuration()) {
-     // Clear the console log and display it
-     clearLog();
-     log("Song's finished, press Start again,");
-     log("or click in the middle of the song,");
-     log("or load another song...");
-
-     // Stop the current song
-     stopAllTracks();
-     }
-     }
-     }
      }
      requestAnimFrame(animateTime);
      

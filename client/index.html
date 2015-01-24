@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>MT5, the HTML5 multitrack player for musicians</title>
     <!--
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
@@ -19,6 +20,7 @@
         <div id="leftHeader">
             <div id="ce-search">
                 <div id="songs" class=""></div>
+                <div id="loadingTracks"></div>
             </div>
             <div id="ce-titleControls">
 
@@ -30,13 +32,13 @@
                                 <i class="fa fa-bookmark-o fa-3x"></i>
                                 <div>Chapitres</div>
                             </div>
-                            <div  id="loop" class="ce-icon-text" style="margin-left: 10px;">
+                            <div id="loop" class="ce-icon-text" style="margin-left: 10px;">
                                 <i class="fa fa-repeat fa-3x"></i>
                                 <div class="loopTitle">Boucle</div>
                             </div>
                         </div>
                         <span id="ce-title">
-                            No song selected
+                            Aucun morceau sélectionné
                         </span>
                     </div>
                     <span id="ce-bpm">
@@ -73,12 +75,8 @@
                         <i id="brecordMix" class="fa fa-circle fa-2x"></i>
                     </div>
                     <div class="row-3">
-                        <i class="fa fa-volume-up fa-2x"></i>
-                        <div id="volume-bar">
-                            <div class="bar">
-                                <div id="masterVolume" class="circle"></div>
-                            </div>
-                        </div>
+                        <i id="bsound" class="fa fa-volume-up fa-2x"></i>
+                        <input id="masterVolume" type="range" class="masterVolumeSlider masterCustom" min="0" max="100" value="50" oninput="" />
                     </div>
                 </div>
                 <div class="ce-ctrl-wave" >
@@ -147,15 +145,6 @@
     <div id="scroll">
         <div id="trackControl">
             <table id="tracks"></table>
-        </div>
-
-        <div id="canvass">
-            <div style="position: relative;">
-                <!--
-                <canvas id="myCanvas" width="602" height="400" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
-                <canvas id="frontCanvas"                       style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
-                -->
-            </div>
         </div>
     </div>
 </div>

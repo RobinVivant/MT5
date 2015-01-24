@@ -7,7 +7,11 @@ $(document).ready(function(){
     $('#bplay').on('click', function(){
         if (currentSong === undefined || _finishedLoading == false) return;
         if( $(this).hasClass('fa-play') ){
-            playAllTracks(0);
+            if (lastTime != 0) {
+                playAllTracks(lastTime);
+            } else {
+                playAllTracks(0);
+            }
             $(this).removeClass('fa-play');
             $(this).addClass('fa-pause');
         }else{

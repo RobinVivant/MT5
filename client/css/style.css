@@ -84,6 +84,7 @@ body, html{
 
 #scroll {
     position: absolute;
+    overflow-x: hidden;
     top: 303px;
     width: 100%;
     background: #525252;
@@ -141,13 +142,19 @@ a[data-toggle=tab] {
 }
 
 .activated {
-    color: green;
-    border: 3px solid green;
+    color: black;
+    background-color: #00F0F0;
+    border-radius: 50%;
 }
 
 .volumeSlider {
-    margin-left: 20px;
+    margin-left: 15px;
     width: 170px;
+}
+
+.masterVolumeSlider {
+    margin-left: 15px;
+    width: 200px;
 }
 
 /***** for sliders *****/
@@ -158,12 +165,10 @@ a[data-toggle=tab] {
 
 .custom {
     width: 60%;
-    -webkit-appearance: none !important;
-    height: 4px;
+    height: 6px;
     border-radius: 2px;
     -webkit-appearance: none !important;
     -webkit-box-shadow: inset 0 0 5px #333;
-    transition: background 450ms;
 }
 
 /* Change the Slider Button Color Here */
@@ -171,19 +176,23 @@ a[data-toggle=tab] {
 .custom::-webkit-slider-thumb {
     -webkit-appearance: none !important;
     background: #AAA;
-    border: 1px solid #999;
-    height: 15px;
-    width: 15px;
+    border: none;
+    height: 25px;
+    width: 25px;
     border-radius: 15px;
 }
 
 .custom::-moz-range-thumb {
     background: #AAA;
-    border: 1px solid #999;
-    height: 15px;
-    width: 15px;
+    border: none;
+    height: 25px;
+    width: 25px;
     border-radius: 15px;
 }
+/*
+.custom::-webkit-slider-runnable-track{
+    height: 6px;
+}*/
 
 
 /* ONLY applicable if you want the bubble above the slider */
@@ -251,7 +260,16 @@ body {
 }
 
 #ce-search{
+    display: -webkit-flex;
+}
 
+#loadingTracks {
+    text-align: center;
+    -webkit-flex-direction: row;
+    -webkit-flex-wrap: nowrap;
+    -webkit-flex-grow: 1;
+    margin-top: 20px;
+    font-size: 1.1em;
 }
 
 #ce-titleControls{
@@ -347,7 +365,7 @@ body {
 }
 
 .partoche {
-    width: 74%;
+    width: 77%;
     position: absolute;
     height: 120px;
     margin-left: 2px;
@@ -362,11 +380,12 @@ body {
 
 #songs select {
     display:block;
-    line-height:1em;
+    line-height:1.5em;
     font-size:1em;
     height:40px;
     margin:10px;
     padding:5px;
+    padding-left: 10px;
     width: 250px;
     background: url(../img/down_arrow_select.jpg) no-repeat right #ddd;
     -webkit-appearance: none;

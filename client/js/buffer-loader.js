@@ -50,9 +50,22 @@ BufferLoader.prototype.loadBuffer = function (url, index) {
     // e.total - 100%
     // e.value - ?
     if (e.total !== 0) {
-      //var percent = (e.loaded * 100) / e.total;
+      var percent = (e.loaded * 100) / e.total;
 
-      //console.log("loaded " + percent  + "of song " + index);
+      var text;
+      if ($('#loadingTracks').text() == "") {
+        text = 'Chargement des pistes';
+      }
+      else {
+        text = $('#loadingTracks').text();
+      }
+      
+      if (percent == 100.0) {
+        text += '.';
+      }
+      $('#loadingTracks').text(text);
+
+      console.log("loaded " + percent  + "of song " + index);
       var progress = document.querySelector("#progress" + index);
       progress.value = e.loaded;
       progress.max = e.total;
