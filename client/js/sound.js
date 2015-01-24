@@ -82,7 +82,7 @@ function init() {
      });
      
     // Master volume slider
-    masterVolumeSlider = $('.knob').val();
+    masterVolumeSlider = $('#masterVolume').val();
 
     // Init audio context
     context = initAudioContext();
@@ -662,8 +662,7 @@ function setMasterVolume(val) {
 
         // set its volume to the current value of the master volume knob
         if (val === undefined) {
-            //fraction = $("#masterVolume").val() / 100;
-            fraction = 1;
+            fraction = $("#masterVolume").val() / 100;
         } else {
             fraction = val / 100;
         }
