@@ -147,6 +147,12 @@ a[data-toggle=tab] {
     border-radius: 50%;
 }
 
+.activatedMute {
+    color: black;
+    background-color: red;
+    border-radius: 50%;
+}
+
 .volumeSlider {
     margin-left: 15px;
     width: 170px;
@@ -401,7 +407,7 @@ body {
 }
 
 #ce-bpm{
-   width:110px;
+   width:150px;
 }
 
 .ce-bpm-select{

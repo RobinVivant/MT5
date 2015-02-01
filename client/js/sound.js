@@ -75,9 +75,12 @@ function init() {
             var mousePos = getMousePos(window.View.frontCanvas, event);
             // will compute time from mouse pos and start playing from there...
             jumpTo(mousePos.x);
+
+            $("#bplay").removeClass('fa-play');
+            $("#bplay").addClass('fa-pause');
         }
         else {
-            clearLoop()
+            clearLoop();
         }
      });
      
@@ -674,8 +677,6 @@ function setMasterVolume(val) {
     }
 }
 
-
-
 function soloNosoloTrack(trackNumber) {
     var s = document.querySelector("#solo" + trackNumber);
     var m = document.querySelector("#mute" + trackNumber);
@@ -688,20 +689,35 @@ function soloNosoloTrack(trackNumber) {
     if (!currentTrack.solo) {
         // we were not in solo mode, let's go in solo mode
         currentTrack.solo = true;
-        // Let's change the icon
-        //s.innerHTML = "<img src='../img/noearphones.png' />";
+        for (var i = 0; i < currentSong.tracks.length; i++) {
+            if (i == trackNumber)
+                continue;
+
+            currentSong.tracks[i].solo = false;
+            var anotherTrackSolo = document.querySelector("#solo" + i);
+            $(anotherTrackSolo).removeClass("activated");
+
+            if (!currentSong.tracks[i].muted) {
+                currentSong.tracks[i].muted = true;
+                var anotherTrack = document.querySelector("#mute" + i);
+                $(anotherTrack).toggleClass("activatedMute");
+            }
+        }
     } else {
         // we were in solo mode, let's go to the "no solo" mode
         currentTrack.solo = false;
-        // Let's change the icon
-        //s.innerHTML = "<img src='../img/earphones.png' />";
+        for (var i = 0; i < currentSong.tracks.length; i++) {
+            if (i == trackNumber)
+                continue;
+            currentSong.tracks[i].muted = false;
+            var anotherTrack = document.querySelector("#mute" + i);
+            $(anotherTrack).removeClass("activatedMute");
+        }
     }
 
     // In all cases we remove the mute state of the curent track
-    currentTrack.mute = false;
-    $(m).removeClass("activated");
-    // Let's change the icon
-    //m.innerHTML = "<span class='glyphicon glyphicon-volume-up'></span>";
+    currentTrack.muted = false;
+    $(m).removeClass("activatedMute");
 
     // Adjust the volumes depending on all mute/solo states
     currentSong.setTrackVolumesDependingOnMuteSoloStatus();
@@ -713,25 +729,23 @@ function muteUnmuteTrack(trackNumber) {
     var s = document.querySelector("#solo" + trackNumber);
 
     var currentTrack = currentSong.tracks[trackNumber];
+    for (var i = 0; i < currentSong.tracks.length; i++) {
+        if (currentSong.tracks[i].solo) return;
+    }
 
-    $(m).toggleClass("activated");
+    $(m).toggleClass("activatedMute");
 
     if (!currentTrack.muted) {
         // Track was not muted, let's mute it!
         currentTrack.muted = true;
-        // let's change the button's class
-        //m.innerHTML = "<span class='glyphicon glyphicon-volume-off'></span>";
     } else {
         // track was muted, let's unmute it!
         currentTrack.muted = false;
-        //m.innerHTML = "<span class='glyphicon glyphicon-volume-up'></span>";
     }
 
     // In all cases we must put the track on "no solo" mode
     currentTrack.solo = false;
     $(s).removeClass("activated");
-    // Let's change the icon
-    //s.innerHTML = "<img src='../img/earphones.png' />";
 
     // adjust track volumes dependinf on all mute/solo states
     currentSong.setTrackVolumesDependingOnMuteSoloStatus();
@@ -739,17 +753,8 @@ function muteUnmuteTrack(trackNumber) {
 
 function masterMuteUnmute(btn) {
     if (currentSong === undefined) return;
-
     currentSong.toggleMute();
-
     $(btn).toggleClass("activated");
-/*
-    if (currentSong.muted) {
-        btn.innerHTML = '<span class="glyphicon glyphicon-volume-off"></span>';
-    } else {
-        btn.innerHTML = '<span class="glyphicon glyphicon-volume-up"></span>';
-    }
-    */
 }
 
 function toggleRecordMix() {
