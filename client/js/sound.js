@@ -28,6 +28,7 @@ var selectionForLoop = {
     width: 0
 };
 
+var isMousedown = false;
 
 // Sample size in pixels
 var SAMPLE_HEIGHT = 75;
@@ -69,18 +70,82 @@ function init() {
      // The waveform drawer
      waveformDrawer = new WaveformDrawer();
 
-     View.frontCanvas.addEventListener("click", function (event) {
-     if (!existsSelection()) {
-            if (currentSong === undefined || _finishedLoading == false) return;
-            var mousePos = getMousePos(window.View.frontCanvas, event);
+     View.frontCanvas.addEventListener("touchstart", function (event) {
+        if (currentSong === undefined || _finishedLoading == false) return;
+        var mousePos = getMousePos(window.View.frontCanvas, event, true);
+
+        if (isLooping) {
+            resetSelection();
+            setLoopStart(mousePos);
+        }
+        else {
             // will compute time from mouse pos and start playing from there...
             jumpTo(mousePos.x);
 
-            $("#bplay").removeClass('fa-play');
-            $("#bplay").addClass('fa-pause');
+            if ($("#bplay").hasClass('fa-play')) {
+                $("#bplay").removeClass('fa-play');
+                $("#bplay").addClass('fa-pause');
+            }
+        }
+    });
+
+     View.frontCanvas.addEventListener("mousedown", function (event) {
+        if (currentSong === undefined || _finishedLoading == false) return;
+        var mousePos = getMousePos(window.View.frontCanvas, event, false);
+        isMousedown = true;
+        if (isLooping) {
+            resetSelection();
+            setLoopStart(mousePos);
         }
         else {
-            clearLoop();
+            // will compute time from mouse pos and start playing from there...
+            jumpTo(mousePos.x);
+
+            if ($("#bplay").hasClass('fa-play')) {
+                $("#bplay").removeClass('fa-play');
+                $("#bplay").addClass('fa-pause');
+            }
+        }
+    });
+
+     View.frontCanvas.addEventListener("touchmove", function(event) {
+         if (currentSong === undefined || _finishedLoading == false) return;
+         if (isLooping) {
+            var mousePos = getMousePos(window.View.frontCanvas, event, true);
+            setLoopEnd(mousePos);
+         }
+     });
+
+     View.frontCanvas.addEventListener("mousemove", function(event) {
+         if (currentSong === undefined || _finishedLoading == false) return;
+         if (isMousedown) {
+            if (isLooping) {
+               var mousePos = getMousePos(window.View.frontCanvas, event, false);
+               setLoopEnd(mousePos);
+            }
+        }
+     });
+
+     View.frontCanvas.addEventListener("touchend", function(event) {
+        if (isLooping) {
+            stopAllTracks();
+            var totalTime = currentSong.getDuration();
+            var startTime = (selectionForLoop.xStart * totalTime) / window.View.frontCanvas.width;
+            currentSong.elapsedTimeSinceStart = startTime;
+            lastTime = context.currentTime;
+            playAllTracks(startTime);
+        }
+     });
+
+     View.frontCanvas.addEventListener("mouseup", function(event) {
+        if (isLooping) {
+            isMousedown = false;
+            stopAllTracks();
+            var totalTime = currentSong.getDuration();
+            var startTime = (selectionForLoop.xStart * totalTime) / window.View.frontCanvas.width;
+            currentSong.elapsedTimeSinceStart = startTime;
+            lastTime = context.currentTime;
+            playAllTracks(startTime);
         }
      });
      
@@ -119,25 +184,24 @@ function loopOnOff() {
     console.log("LoopMode : " + currentSong.loopMode);
 }
 
-function setLoopStart() {
+function setLoopStart(mousePos) {
     if (!currentSong.paused) {
-        loopOnOff();
-        selectionForLoop.xStart = currentXTimeline;
+        selectionForLoop.xStart = mousePos.x;
         // Switch xStart and xEnd if necessary, compute width of selection
         adjustSelectionMarkers();
     }
 }
 
-function setLoopEnd() {
+function setLoopEnd(mousePos) {
     if (!currentSong.paused) {
-        selectionForLoop.xEnd = currentXTimeline;
+        selectionForLoop.xEnd = mousePos.x;
+        if (selectionForLoop.xEnd < selectionForLoop.xStart) {
+            selectionForLoop.xStart = selectionForLoop.xEnd;
+            selectionForLoop.xEnd = selectionForLoop.xStart;
+        }
         // Switch xStart and xEnd if necessary, compute width of selection
         adjustSelectionMarkers();
     }
-}
-
-function clearLoop() {
-    resetSelection();
 }
 
 function resetSelection() {
@@ -151,16 +215,16 @@ function resetSelection() {
 function handleClickLoop() {
     if (currentSong === undefined || _finishedLoading == false) return;
     if (isLooping) {
+        resetSelection();
         isLooping = false;
-        console.log($('.loopTitle'));
-        $('.loopTitle').text('Boucle');
-        setLoopEnd();
+        loopOnOff();
+        $('.fa-refresh').css('color', 'black');
     }
     else {
         resetSelection();
         isLooping = true;
-        $('.loopTitle').text('Fin boucle');
-        setLoopStart();
+        loopOnOff();
+        $('.fa-refresh').css('color', '#00F0F0');
     }
 }
 
@@ -170,20 +234,11 @@ function adjustSelectionMarkers() {
     if (existsSelection()) {
         // Adjust the different values of the selection
         var selectionWidth;
+        var start = selectionForLoop.xStart;
         var end;
         if (selectionForLoop.xEnd != -1) {
-            selectionWidth = Math.abs(selectionForLoop.xEnd - selectionForLoop.xStart);
-            if (isLooping)
-                end = Math.max(selectionForLoop.xStart, currentXTimeline);
-        } else {
-            selectionWidth = Math.abs(currentSong.elapsedTimeSinceStart - selectionForLoop.xStart)
-            if (isLooping)
-                end = Math.max(selectionForLoop.xStart, selectionForLoop.xEnd);
-        }
-
-        var start = selectionForLoop.xStart;
-        if (!isLooping) {
             end = selectionForLoop.xEnd;
+            selectionWidth = Math.abs(end - start);
         }
 
         selectionForLoop = {
@@ -430,7 +485,7 @@ function loadSong(songName) {
     xhr.send();
 }
 
-function getMousePos(canvas, evt) {
+function getMousePos(canvas, evt, touch) {
     // get canvas position
     var obj = canvas;
     var top = 0;
@@ -441,9 +496,20 @@ function getMousePos(canvas, evt) {
         left += obj.offsetLeft;
         obj = obj.offsetParent;
     }
+    var mouseX;
+    var mouseY;
+    if (touch) {
+        mouseX = evt.touches[0].clientX;
+        mouseY = evt.touches[0].clientY;
+    }
+    else {
+        mouseX = evt.clientX;
+        mouseY = evt.clientY;   
+    }
+    mouseX -= (left + window.pageXOffset);
+    mouseY -= (top + window.pageYOffset);
+
     // return relative mouse position
-    var mouseX = evt.clientX - left + window.pageXOffset;
-    var mouseY = evt.clientY - top + window.pageYOffset;
     return {
         x: mouseX,
         y: mouseY
@@ -536,7 +602,7 @@ function animateTime() {
                  lastTime = currentTime;
 
                  // Did we reach the end of the loop
-                 if (existsSelection() && !isLooping) {
+                 if (existsSelection() && isLooping) {
                      if (currentXTimeline > selectionForLoop.xEnd) {
                         jumpTo(selectionForLoop.xStart);
                     }
