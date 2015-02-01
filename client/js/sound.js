@@ -350,12 +350,20 @@ function openPartoche(trackNumber) {
 
     if (partocheOpened) {
         $(p).height(120);
+        $(tb).height(120);
         $(tb).css('background-color', '#525252');
         $(p).css('z-index', '0');
+        $(p).css('border', '0px solid #525252');
+        $(p).css('transform', 'scale(1, 1)');
+        $(p).css('margin-left', '2px');
     } else {
         $(p).height($('#scroll').height());
+        $(tb).height($('#scroll').height());
         $(tb).css('background-color', '#A04646');
         $(p).css('z-index', '10');
+        $(p).css('border', '5px solid #A04646');
+        $(p).css('transform', 'scale(0.95, 1)');
+        $(p).css('margin-left', '-18px');
     }
 
     partocheOpened = !partocheOpened;
@@ -391,6 +399,9 @@ function loadSong(songName) {
             var instruName = instrument.name.charAt(0).toUpperCase() + instrument.name.substr(1).toLowerCase();
             // Render HTMl
             var span = document.createElement('tr');
+            span.className = 'trackBoxContainer';
+            span.id = 'trackBoxContainer-' + trackNumber;
+
             span.innerHTML = '<td class="trackBox" id="trackBox' + trackNumber + '">' +
             "<progress class='pisteProgress' id='progress" + trackNumber + "' value='0' max='100'></progress>" +
             '<div class="instruName">'+ instruName + '</div>'
